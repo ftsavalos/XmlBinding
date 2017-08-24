@@ -1,0 +1,550 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:annotation>
+        <xs:appinfo>Schema documentation</xs:appinfo>
+        <xs:documentation xml:lang="en">
+            This schema defines Simple XML format for CRF Reporter application. Current version is 1.9. Author: Elias Herdt
+        </xs:documentation>
+    </xs:annotation>
+    <xs:element name="data">
+        <xs:annotation>
+            <xs:documentation>envelope element</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="party">
+                    <xs:annotation>
+                        <xs:documentation>element describing party details</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation>party code</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="submission">
+                    <xs:annotation>
+                        <xs:documentation>element describing submission details</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="uid" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation>submission uid as used in CRF Reporter</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="version" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation>version of submission</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="name" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation>submission name</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="submissionYear" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation>year of submission</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="status">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Status of submission (created, started, submitted etc)
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="validated_date" type="xs:string" use="optional">
+                            <xs:annotation>
+                                <xs:documentation>Validated date of submission</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="variables">
+                    <xs:annotation>
+                        <xs:documentation>list of variable descriptions containing data</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="variable" type="variableType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="nodeComments" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>
+                            node comments describes general comments on nodes as well as year specific node comments
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="nodeComment" type="nodeCommentType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="transientValues" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>
+                            transient values are generated during export of submission and not persisted in DB
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="transientValue" type="transientValueType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="metadata" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>element describing user created metadata</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="nodes" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>element describing user created nodes</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="node" type="nodeType" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>element desribing node</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="dimensionInstances" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        element describing collection of dimensin instances of all user created nodes
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="dimensionInstance" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:attribute name="uid" type="xs:string" use="required">
+                                                    <xs:annotation>
+                                                        <xs:documentation>dimension instance uid</xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                                <xs:attribute name="name" type="xs:string" use="required">
+                                                    <xs:annotation>
+                                                        <xs:documentation>name of dimension instance</xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                                <xs:attribute name="parentUid" type="xs:string">
+                                                    <xs:annotation>
+                                                        <xs:documentation>uid of parent dimension instance</xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="keys" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        element describing collection of keys of dimension instances
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="key" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="reportingTables" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="table" type="reportingTableType" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="generationTimestamp" type="xs:dateTime" use="required">
+                <xs:annotation>
+                    <xs:documentation>Date and time of document generation</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="schemaVersion" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>version of this schema, currently 1.8</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="metadataVersion" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation>Version of metadata</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="variableType">
+        <xs:annotation>
+            <xs:documentation>complex type describing variable with records</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="activityData" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>description of activity data of a variable</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="years">
+                <xs:annotation>
+                    <xs:documentation>timeseries for the data described by this variable</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="year" type="yearType" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="comments" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>comments on this variable (line comments)</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>variable name</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="uid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>variable uid as used in CRF Reporter</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="userCreated" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates whether this particular variable is user specific. Optional for standard variables.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Describes type of variable, for informational purpose. Possible values: "TEXT", "NUMBER" or "LIST"
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dropdownUid" type="xs:string" use="optional"/>
+        <xs:attribute name="keyId" type="xs:string" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="recordType">
+        <xs:annotation>
+            <xs:documentation>
+                record type describes one records for specified variable and year
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="baseRecordType">
+                <xs:sequence>
+                    <xs:element name="comments" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="commentType">
+        <xs:annotation>
+            <xs:documentation>commentType describes a comment</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="text" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>content of comment</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        type of comment. for now, it can be: Comment, NK Explanation, Foot note, Activity Data
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="audience" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        visibility of comment: user, party or official (official appears in submission)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="nodeCommentType">
+        <xs:annotation>
+            <xs:documentation>node comments can be defined for nodes in the tree</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="comment" type="commentType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        optional node comment, audience can only be official and of type can only be comment for now
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="yearSpecificComments" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>year specific comments on the node</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="yearSpecificComment" type="yearSpecificCommentType" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="uid"/>
+    </xs:complexType>
+    <xs:complexType name="yearType">
+        <xs:annotation>
+            <xs:documentation>
+                yearType describes an inventory year and records for this year an a variable
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="record" type="recordType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>year name</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="uid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>year uid</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="yearSpecificCommentType">
+        <xs:annotation>
+            <xs:documentation>
+                year specific comments are node commens, which are only defined for specific years
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="commentType">
+                <xs:attribute name="yearName" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="nodeType">
+        <xs:attribute name="uid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>node uid</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="parentUid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>parent uid</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>name of the node</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="keyId" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>key of node referenced to keys element</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="gridUid">
+            <xs:annotation>
+                <xs:documentation>
+                    Grid Uid associated with this node (only for data entry nodes)
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="keyType">
+        <xs:sequence>
+            <xs:element name="dimensionInstances">
+                <xs:annotation>
+                    <xs:documentation>collection of dimension instances corresponding</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="dimensionInstance" maxOccurs="10">
+                            <xs:complexType>
+                                <xs:attribute name="uid" type="xs:string" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>key id</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="baseRecordType">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>value of record</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="transientValueType">
+        <xs:annotation>
+            <xs:documentation>
+                transient values are values which are generated during export and are not persisted in DB
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="years">
+                <xs:annotation>
+                    <xs:documentation>timeseries for the data described by this element</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="year" type="transientYearType" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="userCreatedValues" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>user created sub-transient values</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>
+                            describes a collection of user created transient values
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:element name="userCreatedValue" type="userCreatedTransientType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>transient value name (function name)</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="uid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>transient value uid as used in CRF Reporter</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="userCreated" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates whether this particular transient value is user specific. Optional for standard transient values.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Describes type of transient value, for informational purpose. Transient values are generated on-the-fly, and as such, all holding text values.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="transientYearType">
+        <xs:annotation>
+            <xs:documentation>
+                element describing inventory year element for transient values
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="record" type="transientRecordType">
+                <xs:annotation>
+                    <xs:documentation>list of records</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="uid" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>year uid</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>year name</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="transientRecordType">
+        <xs:annotation>
+            <xs:documentation>describes record data for transient values</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="baseRecordType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="userCreatedTransientType">
+        <xs:annotation>
+            <xs:documentation>
+                transient values which are created by parties, with additional data (dimension and dimension instance UIDs)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="transientValueType">
+                <xs:attribute name="dimensionUid" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            UID of dimension, which is changed against parent dimensions set
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="dimensionInstanceUid" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            dimension instance UID, which is user for this user created transien value
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="reportingTableType">
+        <xs:sequence>
+            <xs:element name="cells">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="cell" type="cellType" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="uid" type="xs:string" use="required"/>
+        <xs:attribute name="year" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="cellType">
+        <xs:sequence/>
+        <xs:attribute name="cellAddress" type="xs:string"/>
+        <xs:attribute name="uid" type="xs:string"/>
+        <xs:attribute name="keyId" type="xs:string"/>
+        <xs:attribute name="variableKeyId" type="xs:string"/>
+        <xs:attribute name="functionName" type="xs:string"/>
+        <xs:attribute name="value" type="xs:string"/>
+        <xs:attribute name="color" type="xs:string"/>
+    </xs:complexType>
+</xs:schema>
