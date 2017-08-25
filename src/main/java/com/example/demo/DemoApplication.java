@@ -10,11 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.demo.util.Performance.printTime;
 
 @SpringBootApplication
 public class DemoApplication implements CommandLineRunner {
@@ -37,16 +38,10 @@ public class DemoApplication implements CommandLineRunner {
         LOGGER.info("XML: {}", data);
 
         List<VariableType> variables = data.getVariables().getVariable();
-
         List<YearType> yearList = new ArrayList<>();
 
-        variables.forEach(a -> a.getYears().getYear().forEach(b -> yearList.add(b)));
-
+        printTime(() -> variables.forEach(a -> a.getYears().getYear().forEach(b -> yearList.add(b))));
         LOGGER.info("yearList size: {}", yearList.size());
-
-//        yearList.forEach(a -> LOGGER.info("{}", a));
-
-
     }
 
     public static void main(String[] args) {
